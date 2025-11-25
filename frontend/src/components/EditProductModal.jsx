@@ -5,7 +5,8 @@ const EditProductModal = ({ product, onClose, onUpdate }) => {
     const [formData, setFormData] = useState({
         name: product.name,
         price: product.price,
-        status: product.status
+        status: product.status,
+        unit: product.unit || 'unidades'
     });
     const [loading, setLoading] = useState(false);
 
@@ -66,6 +67,25 @@ const EditProductModal = ({ product, onClose, onUpdate }) => {
                             min="0"
                             step="0.01"
                         />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">Unidad</label>
+                        <select
+                            name="unit"
+                            value={formData.unit}
+                            onChange={handleChange}
+                            className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+                        >
+                            <option value="unidades">Unidades</option>
+                            <option value="kg">Kg</option>
+                            <option value="litros">Litros</option>
+                            <option value="paquetes">Paquetes</option>
+                            <option value="cajas">Cajas</option>
+                            <option value="gramos">Gramos</option>
+                            <option value="libras">Libras</option>
+                            <option value="oz">Onzas</option>
+                        </select>
                     </div>
 
                     <div>

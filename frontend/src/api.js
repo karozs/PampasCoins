@@ -27,6 +27,11 @@ export const buyProduct = async (purchaseData) => {
     return response.data;
 };
 
+export const checkout = async (checkoutData) => {
+    const response = await axios.post(`${API_URL}/checkout`, checkoutData);
+    return response.data;
+};
+
 export const getUserTransactions = async (userId) => {
     const response = await axios.get(`${API_URL}/history/${userId}`);
     return response.data;

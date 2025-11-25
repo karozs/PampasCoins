@@ -23,7 +23,7 @@ const Register = ({ onLogin }) => {
     return (
         <div className="min-h-screen flex bg-background">
             {/* Left Column - Welcome Section */}
-            <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-secondary to-secondary-dark text-white items-center justify-center relative overflow-hidden">
+            <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary to-primary-dark text-white items-center justify-center relative overflow-hidden">
                 <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1604594849809-dfedbc827105?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80')] opacity-10 bg-cover bg-center"></div>
                 <div className="relative z-10 max-w-lg px-10 text-center">
                     <div className="mb-8 inline-flex p-4 bg-white/10 rounded-full backdrop-blur-sm">
@@ -73,8 +73,8 @@ const Register = ({ onLogin }) => {
             <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-surface">
                 <div className="w-full max-w-md">
                     <div className="text-center mb-10">
-                        <div className="w-20 h-20 bg-secondary/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                            <i className="bi bi-person-plus text-4xl text-secondary"></i>
+                        <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <i className="bi bi-person-plus text-4xl text-primary"></i>
                         </div>
                         <h2 className="text-3xl font-bold text-slate-900 mb-2">Crear Cuenta</h2>
                         <p className="text-slate-500">Complete el formulario para comenzar</p>
@@ -96,7 +96,7 @@ const Register = ({ onLogin }) => {
                                 </div>
                                 <input
                                     type="text"
-                                    className="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-200 focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all bg-slate-50 focus:bg-white"
+                                    className="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all bg-slate-50 focus:bg-white"
                                     placeholder="María González"
                                     value={formData.name}
                                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -113,7 +113,7 @@ const Register = ({ onLogin }) => {
                                 </div>
                                 <input
                                     type="text"
-                                    className="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-200 focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all bg-slate-50 focus:bg-white"
+                                    className="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all bg-slate-50 focus:bg-white"
                                     placeholder="+34 612 345 678"
                                     value={formData.phone}
                                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
@@ -130,7 +130,7 @@ const Register = ({ onLogin }) => {
                                 </div>
                                 <input
                                     type="password"
-                                    className="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-200 focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all bg-slate-50 focus:bg-white"
+                                    className="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all bg-slate-50 focus:bg-white"
                                     placeholder="••••••••"
                                     value={formData.password}
                                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
@@ -143,7 +143,7 @@ const Register = ({ onLogin }) => {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full py-4 bg-secondary text-white rounded-xl font-bold hover:bg-secondary-light transition-colors shadow-lg shadow-secondary/20 flex justify-center items-center disabled:opacity-70 disabled:cursor-not-allowed"
+                            className="w-full py-4 bg-primary text-white rounded-xl font-bold hover:bg-primary-light transition-colors shadow-lg shadow-primary/20 flex justify-center items-center disabled:opacity-70 disabled:cursor-not-allowed"
                         >
                             {loading ? (
                                 <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
@@ -156,7 +156,7 @@ const Register = ({ onLogin }) => {
 
                         <div className="text-center mt-8">
                             <p className="text-slate-500">
-                                ¿Ya tienes cuenta? <Link to="/login" className="text-secondary font-bold hover:underline">Iniciar sesión</Link>
+                                ¿Ya tienes cuenta? <Link to="/login" className="text-primary font-bold hover:underline">Iniciar sesión</Link>
                             </p>
                         </div>
                     </form>

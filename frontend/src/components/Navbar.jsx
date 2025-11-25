@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useCart } from '../context/CartContext';
 
 const Navbar = ({ user, onLogout }) => {
     const location = useLocation();
     const navigate = useNavigate();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const { toggleCart, cartCount } = useCart();
 
     const isActive = (path) => {
         return location.pathname === path
@@ -50,9 +52,21 @@ const Navbar = ({ user, onLogout }) => {
                     <div className="hidden md:flex items-center space-x-4">
                         {user ? (
                             <>
+                                <button
+                                    onClick={toggleCart}
+                                    className="relative p-2 text-slate-500 hover:text-primary transition-colors"
+                                >
+                                    <i className="bi bi-cart text-xl"></i>
+                                    {cartCount > 0 && (
+                                        <span className="absolute top-0 right-0 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center border-2 border-white">
+                                            {cartCount}
+                                        </span>
+                                    )}
+                                </button>
+
                                 <div className="flex items-center bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-100">
                                     <i className="bi bi-coin text-bronze mr-2"></i>
-                                    <span className="font-bold text-slate-900 text-sm">{parseFloat(user.balance).toFixed(0)} TC</span>
+                                    <span className="font-bold text-slate-900 text-sm">{parseFloat(user.balance).toFixed(2)} TC</span>
                                 </div>
 
                                 <div className="relative">
@@ -102,7 +116,20 @@ const Navbar = ({ user, onLogout }) => {
                     </div>
 
                     {/* Mobile Menu Button */}
-                    <div className="md:hidden flex items-center">
+                    <div className="md:hidden flex items-center gap-4">
+                        {user && (
+                            <button
+                                onClick={toggleCart}
+                                className="relative text-slate-500 hover:text-primary transition-colors"
+                            >
+                                <i className="bi bi-cart text-xl"></i>
+                                {cartCount > 0 && (
+                                    <span className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center border-2 border-white">
+                                        {cartCount}
+                                    </span>
+                                )}
+                            </button>
+                        )}
                         <button
                             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                             className="text-slate-600 focus:outline-none hover:text-primary"

@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { getProducts, buyProduct, getUserProfile } from '../api';
-import RateSellerModal from './RateSellerModal';
+import { getProducts, getUserProfile } from '../api';
 import { Link } from 'react-router-dom';
+import { useCart } from '../context/CartContext';
 
 const Marketplace = ({ user, updateUser }) => {
     const [products, setProducts] = useState([]);
     const [filteredProducts, setFilteredProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [currentUser, setCurrentUser] = useState(user);
-    const [showRateModal, setShowRateModal] = useState(false);
-    const [currentTransaction, setCurrentTransaction] = useState(null);
+    const { addToCart } = useCart();
 
     // Filters
     const [searchTerm, setSearchTerm] = useState('');
@@ -87,38 +86,6 @@ const Marketplace = ({ user, updateUser }) => {
         setFilteredProducts(filtered);
     };
 
-    const handleBuy = async (product) => {
-        if (parseFloat(currentUser.balance) < parseFloat(product.price)) {
-            alert('❌ Saldo insuficiente. Necesitas ' + product.price + ' TC pero solo tienes ' + parseFloat(currentUser.balance).toFixed(0) + ' TC');
-            return;
-        }
-
-        if (!window.confirm(`¿Confirmas la compra de "${product.name}" por ${product.price} TC?`)) return;
-
-        try {
-            const result = await buyProduct({
-                product_id: product.id,
-                buyer_id: user.id
-            });
-
-            // Prepare transaction object for rating modal
-            setCurrentTransaction({
-                seller_id: product.seller_id,
-                buyer_id: user.id,
-                seller_name: product.seller_name,
-                product_name: product.name
-            });
-
-            fetchProducts();
-            fetchUserProfile();
-            setShowRateModal(true);
-
-        } catch (error) {
-            console.error('Purchase error:', error);
-            alert('❌ Error al comprar: ' + (error.response?.data?.error || error.message));
-        }
-    };
-
     const clearFilters = () => {
         setSearchTerm('');
         setMinPrice('');
@@ -129,7 +96,7 @@ const Marketplace = ({ user, updateUser }) => {
     };
 
     return (
-        <div className="min-h-screen bg-background py-8">
+        <div className="min-h-screen bg-background py-8 animate-fade-in">
             <div className="container mx-auto px-4">
                 {/* Header */}
                 <div className="flex flex-col md:flex-row justify-between items-center mb-8">
@@ -191,9 +158,9 @@ const Marketplace = ({ user, updateUser }) => {
                         </button>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 animate-slide-up">
                         {filteredProducts.map((product) => (
-                            <div key={product.id} className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-md transition-shadow flex flex-col h-full">
+                            <div key={product.id} className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col h-full">
                                 <div className="h-48 bg-slate-100 relative">
                                     {product.image_url ? (
                                         <img src={product.image_url} alt={product.name} className="w-full h-full object-cover" />
@@ -215,7 +182,10 @@ const Marketplace = ({ user, updateUser }) => {
                                 <div className="p-4 flex-1 flex flex-col">
                                     <div className="flex justify-between items-start mb-2">
                                         <h3 className="font-bold text-slate-900 line-clamp-1">{product.name}</h3>
-                                        <span className="font-bold text-secondary whitespace-nowrap ml-2">{parseFloat(product.price).toFixed(0)} TC</span>
+                                        <div className="text-right">
+                                            <span className="font-bold text-secondary whitespace-nowrap ml-2">{parseFloat(product.price).toFixed(0)} TC</span>
+                                            <p className="text-xs text-slate-400">/{product.unit || 'u'}</p>
+                                        </div>
                                     </div>
 
                                     <p className="text-sm text-slate-500 mb-3 line-clamp-2 flex-1">{product.description}</p>
@@ -235,7 +205,7 @@ const Marketplace = ({ user, updateUser }) => {
                                         ) : (
                                             <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
                                                 <i className="bi bi-check-circle-fill mr-1"></i>
-                                                Stock: {product.quantity} unidades
+                                                Stock: {product.quantity} {product.unit || 'unidades'}
                                             </span>
                                         )}
                                     </div>
@@ -254,10 +224,10 @@ const Marketplace = ({ user, updateUser }) => {
                                             </Link>
                                         </div>
                                         <button
-                                            onClick={() => handleBuy(product)}
-                                            className="px-4 py-2 bg-primary text-white text-sm font-bold rounded-lg hover:bg-primary-dark transition-colors shadow-sm"
+                                            onClick={() => addToCart(product)}
+                                            className="px-4 py-2 bg-primary text-white text-sm font-bold rounded-lg hover:bg-primary-dark transition-all hover:scale-105 shadow-sm flex items-center gap-2"
                                         >
-                                            Comprar
+                                            <i className="bi bi-cart-plus"></i> Agregar
                                         </button>
                                     </div>
                                 </div>
@@ -266,17 +236,6 @@ const Marketplace = ({ user, updateUser }) => {
                     </div>
                 )}
             </div>
-
-            {/* Rate Seller Modal */}
-            {showRateModal && currentTransaction && (
-                <RateSellerModal
-                    transaction={currentTransaction}
-                    onClose={() => setShowRateModal(false)}
-                    onRate={() => {
-                        // Optional: Refresh data or show success message
-                    }}
-                />
-            )}
         </div>
     );
 };

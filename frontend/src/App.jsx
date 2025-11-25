@@ -9,6 +9,9 @@ import Profile from './components/Profile';
 import History from './components/History';
 import CreateProduct from './components/CreateProduct';
 
+import { CartProvider } from './context/CartContext';
+import CartDrawer from './components/CartDrawer';
+
 function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -45,23 +48,26 @@ function App() {
   }
 
   return (
-    <Router>
-      <div className="min-h-screen bg-background">
-        <Navbar user={user} onLogout={handleLogout} />
+    <CartProvider>
+      <Router>
+        <div className="min-h-screen bg-background">
+          <Navbar user={user} onLogout={handleLogout} />
+          <CartDrawer user={user} onCheckoutSuccess={(newBalance) => updateUser({ ...user, balance: newBalance })} />
 
-        <Routes>
-          <Route path="/login" element={!user ? <Login onLogin={handleLogin} /> : <Navigate to="/dashboard" />} />
-          <Route path="/register" element={!user ? <Register onLogin={handleLogin} /> : <Navigate to="/dashboard" />} />
-          <Route path="/dashboard" element={user ? <Dashboard user={user} /> : <Navigate to="/login" />} />
-          <Route path="/products" element={user ? <Marketplace user={user} updateUser={updateUser} /> : <Navigate to="/login" />} />
-          <Route path="/profile" element={user ? <Profile user={user} /> : <Navigate to="/login" />} />
-          <Route path="/profile/:id" element={user ? <Profile user={user} /> : <Navigate to="/login" />} />
-          <Route path="/history" element={user ? <History user={user} /> : <Navigate to="/login" />} />
-          <Route path="/create-product" element={user ? <CreateProduct user={user} /> : <Navigate to="/login" />} />
-          <Route path="/" element={<Navigate to={user ? "/dashboard" : "/login"} />} />
-        </Routes>
-      </div>
-    </Router>
+          <Routes>
+            <Route path="/login" element={!user ? <Login onLogin={handleLogin} /> : <Navigate to="/dashboard" />} />
+            <Route path="/register" element={!user ? <Register onLogin={handleLogin} /> : <Navigate to="/dashboard" />} />
+            <Route path="/dashboard" element={user ? <Dashboard user={user} /> : <Navigate to="/login" />} />
+            <Route path="/products" element={user ? <Marketplace user={user} updateUser={updateUser} /> : <Navigate to="/login" />} />
+            <Route path="/profile" element={user ? <Profile user={user} /> : <Navigate to="/login" />} />
+            <Route path="/profile/:id" element={user ? <Profile user={user} /> : <Navigate to="/login" />} />
+            <Route path="/history" element={user ? <History user={user} /> : <Navigate to="/login" />} />
+            <Route path="/create-product" element={user ? <CreateProduct user={user} /> : <Navigate to="/login" />} />
+            <Route path="/" element={<Navigate to={user ? "/dashboard" : "/login"} />} />
+          </Routes>
+        </div>
+      </Router>
+    </CartProvider>
   );
 }
 

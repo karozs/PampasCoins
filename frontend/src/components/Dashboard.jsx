@@ -99,11 +99,14 @@ const Dashboard = ({ user }) => {
     };
 
     useEffect(() => {
-        fetchProducts();
-        fetchUserProfile();
-        fetchRecentActivity();
-        fetchPopularProducts();
-    }, []);
+        if (user) {
+            setCurrentUser(user);
+            fetchProducts();
+            fetchUserProfile();
+            fetchRecentActivity();
+            fetchPopularProducts();
+        }
+    }, [user]);
 
     const getCurrentDate = () => {
         const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
@@ -112,7 +115,7 @@ const Dashboard = ({ user }) => {
     };
 
     return (
-        <div className="min-h-screen bg-background py-8">
+        <div className="min-h-screen bg-background py-8 animate-fade-in">
             <div className="container mx-auto px-4">
                 {/* Header */}
                 <div className="mb-8">
@@ -125,13 +128,13 @@ const Dashboard = ({ user }) => {
                     <div className="lg:col-span-2 space-y-8">
 
                         {/* Balance Card */}
-                        <div className="bg-gradient-to-r from-primary to-primary-light rounded-2xl p-8 text-white shadow-lg relative overflow-hidden">
+                        <div className="bg-gradient-to-r from-primary to-primary-light rounded-2xl p-8 text-white shadow-lg relative overflow-hidden transform hover:scale-[1.02] transition-transform duration-300 animate-slide-up">
                             <div className="absolute top-0 right-0 p-4 opacity-20">
                                 <i className="bi bi-coin text-9xl transform rotate-12 translate-x-4 -translate-y-4"></i>
                             </div>
                             <div className="relative z-10">
                                 <p className="text-primary-100 font-medium mb-2">Saldo Actual</p>
-                                <h2 className="text-5xl font-bold mb-4">{parseFloat(currentUser.balance).toFixed(0)} <span className="text-2xl font-normal">TC</span></h2>
+                                <h2 className="text-5xl font-bold mb-4">{parseFloat(currentUser.balance).toFixed(2)} <span className="text-2xl font-normal">TC</span></h2>
                                 <div className="flex items-center text-secondary-light bg-white/10 w-fit px-3 py-1 rounded-full text-sm">
                                     <i className="bi bi-graph-up-arrow mr-2"></i>
                                     <span>+{stats.weeklyIncome.toFixed(0)} TC esta semana</span>
@@ -140,22 +143,22 @@ const Dashboard = ({ user }) => {
                         </div>
 
                         {/* Stats Row */}
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-100 flex flex-col items-center text-center hover:shadow-md transition-shadow">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 animate-slide-up-delay-1">
+                            <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-100 flex flex-col items-center text-center hover:shadow-md hover:-translate-y-1 transition-all duration-300">
                                 <div className="mb-3 text-secondary">
                                     <i className="bi bi-bag-check text-2xl"></i>
                                 </div>
                                 <h3 className="text-3xl font-bold text-slate-900 mb-1">{stats.productsSold}</h3>
                                 <p className="text-xs text-slate-500 uppercase tracking-wider">Productos Vendidos</p>
                             </div>
-                            <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-100 flex flex-col items-center text-center hover:shadow-md transition-shadow">
+                            <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-100 flex flex-col items-center text-center hover:shadow-md hover:-translate-y-1 transition-all duration-300">
                                 <div className="mb-3 text-bronze">
                                     <i className="bi bi-cart text-2xl"></i>
                                 </div>
                                 <h3 className="text-3xl font-bold text-slate-900 mb-1">{stats.purchasesMade}</h3>
                                 <p className="text-xs text-slate-500 uppercase tracking-wider">Compras Realizadas</p>
                             </div>
-                            <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-100 flex flex-col items-center text-center hover:shadow-md transition-shadow">
+                            <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-100 flex flex-col items-center text-center hover:shadow-md hover:-translate-y-1 transition-all duration-300">
                                 <div className="mb-3 text-primary">
                                     <i className="bi bi-box-seam text-2xl"></i>
                                 </div>
@@ -165,10 +168,10 @@ const Dashboard = ({ user }) => {
                         </div>
 
                         {/* Actions Row */}
-                        <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+                        <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-100 animate-slide-up-delay-2">
                             <h3 className="font-bold text-slate-900 mb-4">Acciones Rápidas</h3>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <Link to="/create-product" className="flex items-center justify-center p-4 bg-primary text-white rounded-lg hover:bg-primary-light transition-colors font-bold shadow-lg shadow-primary/20">
+                                <Link to="/create-product" className="flex items-center justify-center p-4 bg-primary text-white rounded-lg hover:bg-primary-light transition-all hover:scale-[1.02] font-bold shadow-lg shadow-primary/20">
                                     <i className="bi bi-plus-lg mr-2"></i> Publicar Producto
                                 </Link>
                                 <Link to="/products" className="flex items-center justify-center p-4 bg-white border border-slate-200 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors font-medium">

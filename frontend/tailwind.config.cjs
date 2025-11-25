@@ -8,22 +8,22 @@ module.exports = {
         extend: {
             colors: {
                 primary: {
-                    DEFAULT: '#1b4332', // Dark Green (Tayacoins Brand)
-                    light: '#2d6a4f',
-                    dark: '#081c15',
+                    DEFAULT: '#1e293b', // Slate 800 - Formal Dark
+                    light: '#334155',   // Slate 700
+                    dark: '#0f172a',    // Slate 900
                 },
                 secondary: {
-                    DEFAULT: '#40916c', // Medium Green
-                    light: '#74c69d',
-                    dark: '#2d6a4f',
+                    DEFAULT: '#3b82f6', // Blue 500 - Modern Tech
+                    light: '#60a5fa',   // Blue 400
+                    dark: '#2563eb',    // Blue 600
                 },
                 bronze: {
-                    DEFAULT: '#9d5c0d', // Brownish/Bronze for secondary buttons
-                    light: '#b07d48',
-                    dark: '#78350f',
+                    DEFAULT: '#f59e0b', // Amber 500 - Accent
+                    light: '#fbbf24',
+                    dark: '#d97706',
                 },
                 surface: '#ffffff',
-                background: '#f8fafc',
+                background: '#f1f5f9', // Slate 100
             },
             fontFamily: {
                 sans: ['Inter', 'system-ui', 'sans-serif'],

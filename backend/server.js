@@ -225,11 +225,11 @@ app.get('/api/products', async (req, res) => {
 });
 
 app.post('/api/products', async (req, res) => {
-    const { seller_id, name, description, quantity, price, image_url, category } = req.body;
+    const { seller_id, name, description, quantity, price, image_url, category, unit } = req.body;
     try {
         const [result] = await pool.execute(
-            'INSERT INTO products (seller_id, name, description, quantity, price, image_url, category) VALUES (?, ?, ?, ?, ?, ?, ?)',
-            [seller_id, name, description, quantity || 1, price, image_url, category || 'Otros']
+            'INSERT INTO products (seller_id, name, description, quantity, price, image_url, category, unit) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+            [seller_id, name, description, quantity || 1, price, image_url, category || 'Otros', unit || 'unidades']
         );
         res.status(201).json({ id: result.insertId, message: 'Product created' });
     } catch (error) {
@@ -239,12 +239,12 @@ app.post('/api/products', async (req, res) => {
 });
 
 app.put('/api/products/:id', async (req, res) => {
-    const { name, price, status } = req.body;
+    const { name, price, status, unit } = req.body;
     const productId = req.params.id;
     try {
         await pool.execute(
-            'UPDATE products SET name = ?, price = ?, status = ? WHERE id = ?',
-            [name, price, status, productId]
+            'UPDATE products SET name = ?, price = ?, status = ?, unit = ? WHERE id = ?',
+            [name, price, status, unit, productId]
         );
         res.json({ message: 'Product updated' });
     } catch (error) {
@@ -257,8 +257,10 @@ app.put('/api/products/:id', async (req, res) => {
 app.post('/api/buy', async (req, res) => {
     console.log('=== BUY REQUEST RECEIVED ===');
     console.log('Request body:', JSON.stringify(req.body, null, 2));
-    const { buyer_id, product_id } = req.body;
-    console.log(`Extracted - buyer_id: ${buyer_id}, product_id: ${product_id}`);
+    const { buyer_id, product_id, quantity } = req.body;
+    const buyQuantity = parseInt(quantity) || 1;
+
+    console.log(`Extracted - buyer_id: ${buyer_id}, product_id: ${product_id}, quantity: ${buyQuantity}`);
     const connection = await pool.getConnection();
     try {
         await connection.beginTransaction();
@@ -269,27 +271,30 @@ app.post('/api/buy', async (req, res) => {
         const product = products[0];
 
         if (product.status !== 'available') throw new Error('Product not available');
+        if (product.quantity < buyQuantity) throw new Error(`Insufficient stock. Only ${product.quantity} available.`);
 
         // Get buyer details
         const [buyers] = await connection.execute('SELECT * FROM users WHERE id = ? FOR UPDATE', [buyer_id]);
         if (buyers.length === 0) throw new Error('Buyer not found');
         const buyer = buyers[0];
 
-        console.log(`Processing purchase: Buyer ${buyer_id} (Balance: ${buyer.balance}), Product ${product_id} (Price: ${product.price})`);
+        const totalPrice = Math.round(parseFloat(product.price) * buyQuantity * 100) / 100;
 
-        if (parseFloat(buyer.balance) < parseFloat(product.price)) throw new Error('Insufficient balance');
+        console.log(`Processing purchase: Buyer ${buyer_id} (Balance: ${buyer.balance}), Product ${product_id} (Price: ${product.price} x ${buyQuantity} = ${totalPrice})`);
+
+        if (parseFloat(buyer.balance) < totalPrice) throw new Error('Insufficient balance');
 
         // Update buyer balance
-        const [buyerUpdate] = await connection.execute('UPDATE users SET balance = balance - ? WHERE id = ?', [product.price, buyer_id]);
+        const [buyerUpdate] = await connection.execute('UPDATE users SET balance = balance - ? WHERE id = ?', [totalPrice, buyer_id]);
         console.log('Buyer balance updated:', buyerUpdate.affectedRows);
 
         // Update seller balance
-        const [sellerUpdate] = await connection.execute('UPDATE users SET balance = balance + ? WHERE id = ?', [product.price, product.seller_id]);
+        const [sellerUpdate] = await connection.execute('UPDATE users SET balance = balance + ? WHERE id = ?', [totalPrice, product.seller_id]);
         console.log('Seller balance updated:', sellerUpdate.affectedRows);
 
         // Update product quantity and status
-        if (product.quantity > 1) {
-            await connection.execute('UPDATE products SET quantity = quantity - 1 WHERE id = ?', [product_id]);
+        if (product.quantity > buyQuantity) {
+            await connection.execute('UPDATE products SET quantity = quantity - ? WHERE id = ?', [buyQuantity, product_id]);
         } else {
             await connection.execute('UPDATE products SET quantity = 0, status = "sold" WHERE id = ?', [product_id]);
         }
@@ -297,7 +302,7 @@ app.post('/api/buy', async (req, res) => {
         // Record transaction
         const [txResult] = await connection.execute(
             'INSERT INTO transactions (buyer_id, seller_id, product_id, amount) VALUES (?, ?, ?, ?)',
-            [buyer_id, product.seller_id, product_id, product.price]
+            [buyer_id, product.seller_id, product_id, totalPrice]
         );
         console.log('Transaction recorded:', txResult.insertId);
 
@@ -307,6 +312,103 @@ app.post('/api/buy', async (req, res) => {
     } catch (error) {
         await connection.rollback();
         console.error(error);
+        res.status(400).json({ error: error.message });
+    } finally {
+        connection.release();
+    }
+});
+
+
+// Checkout Route (Bulk Buy)
+app.post('/api/checkout', async (req, res) => {
+    console.log('=== CHECKOUT REQUEST RECEIVED ===');
+    const { buyer_id, items } = req.body;
+    console.log('Buyer ID:', buyer_id);
+    console.log('Items received:', JSON.stringify(items, null, 2));
+    console.log('Number of items:', items?.length);
+
+    if (!items || items.length === 0) {
+        return res.status(400).json({ error: 'No items in cart' });
+    }
+
+    const connection = await pool.getConnection();
+    try {
+        await connection.beginTransaction();
+
+        // Get buyer details
+        const [buyers] = await connection.execute('SELECT * FROM users WHERE id = ? FOR UPDATE', [buyer_id]);
+        if (buyers.length === 0) throw new Error('Buyer not found');
+        const buyer = buyers[0];
+        console.log('Buyer initial balance:', buyer.balance);
+
+        let totalCartPrice = 0;
+
+        // Process each item
+        console.log('--- Processing items ---');
+        for (let i = 0; i < items.length; i++) {
+            const item = items[i];
+            const { product_id, quantity } = item;
+            const buyQuantity = parseInt(quantity) || 1;
+            console.log(`\nItem ${i + 1}/${items.length}:`);
+            console.log('  Product ID:', product_id);
+            console.log('  Quantity:', buyQuantity);
+
+            // Get product details
+            const [products] = await connection.execute('SELECT * FROM products WHERE id = ? FOR UPDATE', [product_id]);
+            if (products.length === 0) throw new Error(`Product ${product_id} not found`);
+            const product = products[0];
+            console.log('  Product name:', product.name);
+            console.log('  Product price:', product.price);
+
+            if (product.status !== 'available') throw new Error(`Product "${product.name}" is no longer available`);
+            if (product.quantity < buyQuantity) throw new Error(`Insufficient stock for "${product.name}". Only ${product.quantity} available.`);
+
+            const itemTotalPrice = Math.round(parseFloat(product.price) * buyQuantity * 100) / 100;
+            console.log('  Item total price:', itemTotalPrice);
+            totalCartPrice += itemTotalPrice;
+            console.log('  Running cart total:', totalCartPrice);
+
+            // Update seller balance
+            await connection.execute('UPDATE users SET balance = balance + ? WHERE id = ?', [itemTotalPrice, product.seller_id]);
+            console.log('  Seller credited:', itemTotalPrice);
+
+            // Update product quantity and status
+            if (product.quantity > buyQuantity) {
+                await connection.execute('UPDATE products SET quantity = quantity - ? WHERE id = ?', [buyQuantity, product_id]);
+            } else {
+                await connection.execute('UPDATE products SET quantity = 0, status = "sold" WHERE id = ?', [product_id]);
+            }
+
+            // Record transaction
+            await connection.execute(
+                'INSERT INTO transactions (buyer_id, seller_id, product_id, amount) VALUES (?, ?, ?, ?)',
+                [buyer_id, product.seller_id, product_id, itemTotalPrice]
+            );
+            console.log('  Transaction recorded');
+        }
+
+        console.log('\n--- Final calculations ---');
+        console.log('Total cart price:', totalCartPrice);
+        console.log('Buyer balance:', buyer.balance);
+
+        // Check and deduct buyer balance
+        if (parseFloat(buyer.balance) < totalCartPrice) throw new Error('Insufficient balance for total purchase');
+
+        await connection.execute('UPDATE users SET balance = balance - ? WHERE id = ?', [totalCartPrice, buyer_id]);
+        console.log('Buyer balance deducted:', totalCartPrice);
+
+        // Fetch updated balance
+        const [updatedBuyer] = await connection.execute('SELECT balance FROM users WHERE id = ?', [buyer_id]);
+        const newBalance = updatedBuyer[0].balance;
+        console.log('New buyer balance:', newBalance);
+
+        await connection.commit();
+        console.log('Transaction committed successfully');
+        res.json({ message: 'Checkout successful', newBalance });
+
+    } catch (error) {
+        await connection.rollback();
+        console.error('Checkout error:', error);
         res.status(400).json({ error: error.message });
     } finally {
         connection.release();
@@ -326,6 +428,8 @@ app.get('/api/history/:userId', async (req, res) => {
             SELECT 
                 t.*,
                 p.name as product_name,
+                p.image_url as product_image,
+                p.unit as product_unit,
                 buyer.name as buyer_name,
                 seller.name as seller_name
             FROM transactions t
