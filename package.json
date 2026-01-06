@@ -1,0 +1,22 @@
+{
+    "name": "pampascoins",
+    "version": "1.0.0",
+    "description": "Sistema de intercambio comunitario con TayaCoins",
+    "scripts": {
+        "start": "cd backend && node server.js",
+        "install-backend": "cd backend && npm install",
+        "install-frontend": "cd frontend && npm install",
+        "build-frontend": "cd frontend && npm install && npm run build"
+    },
+    "engines": {
+        "node": ">=18.0.0",
+        "npm": ">=9.0.0"
+    },
+    "keywords": [
+        "tayacoins",
+        "marketplace",
+        "community"
+    ],
+    "author": "",
+    "license": "ISC"
+}
