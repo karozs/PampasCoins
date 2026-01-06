@@ -191,6 +191,77 @@ app.post('/api/users/:id/cover', uploadCover.single('cover'), async (req, res) =
     }
 });
 
+// Social Media Routes
+// Get user's social media links
+app.get('/api/users/:id/social-media', async (req, res) => {
+    try {
+        const [rows] = await pool.execute(
+            'SELECT * FROM social_media WHERE user_id = ?',
+            [req.params.id]
+        );
+
+        if (rows.length > 0) {
+            res.json(rows[0]);
+        } else {
+            // Return empty object if no social media data exists
+            res.json({
+                user_id: req.params.id,
+                instagram: null,
+                facebook: null,
+                twitter: null,
+                tiktok: null,
+                whatsapp: null,
+                telegram: null
+            });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Error fetching social media' });
+    }
+});
+
+// Create or update user's social media links
+app.put('/api/users/:id/social-media', async (req, res) => {
+    const { id } = req.params;
+    const { instagram, facebook, twitter, tiktok, whatsapp, telegram } = req.body;
+
+    try {
+        // Check if record exists
+        const [existing] = await pool.execute(
+            'SELECT * FROM social_media WHERE user_id = ?',
+            [id]
+        );
+
+        if (existing.length > 0) {
+            // Update existing record
+            await pool.execute(
+                `UPDATE social_media 
+                 SET instagram = ?, facebook = ?, twitter = ?, tiktok = ?, whatsapp = ?, telegram = ?
+                 WHERE user_id = ?`,
+                [instagram, facebook, twitter, tiktok, whatsapp, telegram, id]
+            );
+        } else {
+            // Insert new record
+            await pool.execute(
+                `INSERT INTO social_media (user_id, instagram, facebook, twitter, tiktok, whatsapp, telegram)
+                 VALUES (?, ?, ?, ?, ?, ?, ?)`,
+                [id, instagram, facebook, twitter, tiktok, whatsapp, telegram]
+            );
+        }
+
+        // Return updated data
+        const [updated] = await pool.execute(
+            'SELECT * FROM social_media WHERE user_id = ?',
+            [id]
+        );
+
+        res.json(updated[0]);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Error updating social media' });
+    }
+});
+
 // Product Routes
 app.get('/api/products/popular', async (req, res) => {
     try {

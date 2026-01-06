@@ -53,6 +53,11 @@ const Marketplace = ({ user, updateUser }) => {
     const applyFilters = () => {
         let filtered = [...products];
 
+        // Filter by category
+        if (selectedCategory && selectedCategory !== 'All') {
+            filtered = filtered.filter(p => p.category === selectedCategory);
+        }
+
         // Search by name
         if (searchTerm) {
             filtered = filtered.filter(p =>
@@ -98,28 +103,31 @@ const Marketplace = ({ user, updateUser }) => {
     return (
         <div className="min-h-screen bg-background py-8 animate-fade-in">
             <div className="container mx-auto px-4">
-                {/* Header */}
+                {/* Header - Andean Style */}
                 <div className="flex flex-col md:flex-row justify-between items-center mb-8">
                     <div>
-                        <h1 className="text-3xl font-bold text-slate-900 mb-2">Marketplace</h1>
-                        <p className="text-slate-500">Explora y compra productos de la comunidad</p>
+                        <h1 className="text-4xl font-bold text-gradient-andean mb-2">Marketplace</h1>
+                        <p className="text-slate-600 flex items-center">
+                            <i className="bi bi-shop-window mr-2 text-azul-lago"></i>
+                            Explora y compra productos de la comunidad
+                        </p>
                     </div>
 
-                    {/* Search and Filter */}
+                    {/* Search and Filter - Colorful */}
                     <div className="mt-4 md:mt-0 flex flex-col sm:flex-row gap-4 w-full md:w-auto">
                         <div className="relative">
                             <input
                                 type="text"
-                                className="pl-10 pr-4 py-2 rounded-lg border border-slate-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none w-full sm:w-64"
+                                className="pl-10 pr-4 py-2.5 rounded-xl border-2 border-azul-lago/30 focus:border-azul-lago focus:ring-4 focus:ring-azul-lago/20 outline-none w-full sm:w-64 font-medium"
                                 placeholder="Buscar productos..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                             />
-                            <i className="bi bi-search absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
+                            <i className="bi bi-search absolute left-3 top-1/2 transform -translate-y-1/2 text-azul-lago"></i>
                         </div>
 
                         <select
-                            className="px-4 py-2 rounded-lg border border-slate-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none bg-white"
+                            className="px-4 py-2.5 rounded-xl border-2 border-purpura-mistico/30 focus:border-purpura-mistico focus:ring-4 focus:ring-purpura-mistico/20 outline-none bg-white font-medium text-slate-700"
                             value={selectedCategory}
                             onChange={(e) => setSelectedCategory(e.target.value)}
                         >
@@ -133,7 +141,7 @@ const Marketplace = ({ user, updateUser }) => {
                         </select>
 
                         <select
-                            className="px-4 py-2 rounded-lg border border-slate-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none bg-white"
+                            className="px-4 py-2.5 rounded-xl border-2 border-amarillo-sol/30 focus:border-amarillo-sol focus:ring-4 focus:ring-amarillo-sol/20 outline-none bg-white font-medium text-slate-700"
                             value={sortBy}
                             onChange={(e) => setSortBy(e.target.value)}
                         >
@@ -159,31 +167,37 @@ const Marketplace = ({ user, updateUser }) => {
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 animate-slide-up">
-                        {filteredProducts.map((product) => (
-                            <div key={product.id} className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col h-full">
-                                <div className="h-48 bg-slate-100 relative">
+                        {filteredProducts.map((product, index) => (
+                            <div key={product.id} className="bg-white rounded-2xl shadow-md border-2 border-transparent hover:border-azul-lago/50 overflow-hidden hover-lift transition-all duration-300 flex flex-col h-full animate-scale-in" style={{ animationDelay: `${index * 0.05}s` }}>
+                                <div className="h-48 bg-gradient-to-br from-slate-50 to-slate-100 relative overflow-hidden group">
                                     {product.image_url ? (
-                                        <img src={product.image_url} alt={product.name} className="w-full h-full object-cover" />
+                                        <img src={product.image_url} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center text-slate-300">
-                                            <i className="bi bi-image text-4xl"></i>
+                                            <i className="bi bi-image text-5xl"></i>
                                         </div>
                                     )}
-                                    <div className="absolute top-2 right-2 bg-white/90 px-2 py-1 rounded-md text-xs font-bold text-primary shadow-sm">
+                                    <div className="absolute top-2 right-2 bg-white/95 backdrop-blur-sm px-2 py-1 rounded-lg text-xs font-bold text-azul-lago shadow-md">
                                         {new Date(product.created_at).toLocaleDateString()}
                                     </div>
                                     {product.category && (
-                                        <div className="absolute top-2 left-2 bg-secondary/90 text-white px-2 py-1 rounded-md text-xs font-bold shadow-sm">
+                                        <div className={`absolute top-2 left-2 text-white px-3 py-1 rounded-lg text-xs font-bold shadow-lg ${product.category === 'Tubérculos' ? 'bg-gradient-to-r from-terracota to-naranja-inca' :
+                                            product.category === 'Cereales' ? 'bg-gradient-to-r from-amarillo-sol to-naranja-inca' :
+                                                product.category === 'Legumbres' ? 'bg-gradient-to-r from-verde-puna to-verde-puna-dark' :
+                                                    product.category === 'Frutas' ? 'bg-gradient-to-r from-rojo-andino to-naranja-inca' :
+                                                        product.category === 'Verduras' ? 'bg-gradient-to-r from-verde-puna to-azul-lago' :
+                                                            'bg-gradient-to-r from-purpura-mistico to-azul-lago'
+                                            }`}>
                                             {product.category}
                                         </div>
                                     )}
                                 </div>
 
-                                <div className="p-4 flex-1 flex flex-col">
+                                <div className="p-5 flex-1 flex flex-col">
                                     <div className="flex justify-between items-start mb-2">
-                                        <h3 className="font-bold text-slate-900 line-clamp-1">{product.name}</h3>
+                                        <h3 className="font-bold text-slate-900 line-clamp-1 text-lg">{product.name}</h3>
                                         <div className="text-right">
-                                            <span className="font-bold text-secondary whitespace-nowrap ml-2">{parseFloat(product.price).toFixed(0)} TC</span>
+                                            <span className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-rojo-andino to-naranja-inca whitespace-nowrap ml-2 text-xl">{parseFloat(product.price).toFixed(0)} TC</span>
                                             <p className="text-xs text-slate-400">/{product.unit || 'u'}</p>
                                         </div>
                                     </div>
@@ -225,9 +239,9 @@ const Marketplace = ({ user, updateUser }) => {
                                         </div>
                                         <button
                                             onClick={() => addToCart(product)}
-                                            className="px-4 py-2 bg-primary text-white text-sm font-bold rounded-lg hover:bg-primary-dark transition-all hover:scale-105 shadow-sm flex items-center gap-2"
+                                            className="px-5 py-2.5 bg-gradient-to-r from-azul-lago to-purpura-mistico text-white text-sm font-bold rounded-xl hover:scale-110 hover:shadow-xl transition-all shadow-lg shadow-azul-lago/30 flex items-center gap-2"
                                         >
-                                            <i className="bi bi-cart-plus"></i> Agregar
+                                            <i className="bi bi-cart-plus-fill"></i> Agregar
                                         </button>
                                     </div>
                                 </div>

@@ -25,6 +25,49 @@ const History = ({ user }) => {
         fetchHistory();
     }, [user.id]);
 
+    // Export to CSV function
+    const exportToCSV = () => {
+        if (filteredTransactions.length === 0) {
+            alert('No hay transacciones para exportar');
+            return;
+        }
+
+        // CSV Headers
+        const headers = ['Fecha', 'Tipo', 'Producto', 'Contraparte', 'Monto (TC)', 'Estado'];
+
+        // CSV Rows
+        const rows = filteredTransactions.map(transaction => {
+            const isSale = transaction.seller_id === user.id;
+            const date = new Date(transaction.transaction_date).toLocaleString('es-ES');
+            const type = isSale ? 'Venta' : 'Compra';
+            const product = transaction.product_name;
+            const counterpart = isSale ? transaction.buyer_name : transaction.seller_name;
+            const amount = `${isSale ? '+' : '-'}${parseFloat(transaction.amount).toFixed(2)}`;
+            const status = 'Completada';
+
+            return [date, type, product, counterpart, amount, status];
+        });
+
+        // Create CSV content
+        const csvContent = [
+            headers.join(','),
+            ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+        ].join('\n');
+
+        // Create blob and download
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+
+        link.setAttribute('href', url);
+        link.setAttribute('download', `historial_transacciones_${new Date().toISOString().split('T')[0]}.csv`);
+        link.style.visibility = 'hidden';
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
     // Calculate Summary Stats
     const totalEarned = transactions
         .filter(t => t.seller_id === user.id)
@@ -54,56 +97,59 @@ const History = ({ user }) => {
     return (
         <div className="min-h-screen bg-background py-8 animate-fade-in">
             <div className="container mx-auto px-4">
-                {/* Header */}
+                {/* Header - Andean Style */}
                 <div className="mb-8 flex flex-col md:flex-row justify-between items-center gap-4">
                     <div>
-                        <h1 className="text-3xl font-bold text-slate-900">Historial de Transacciones</h1>
-                        <p className="text-slate-500">Revisa todas tus compras y ventas en el marketplace</p>
+                        <h1 className="text-4xl font-bold text-gradient-andean mb-2">Historial de Transacciones</h1>
+                        <p className="text-slate-600 flex items-center">
+                            <i className="bi bi-clock-history mr-2 text-purpura-mistico"></i>
+                            Revisa todas tus compras y ventas en el marketplace
+                        </p>
                     </div>
                     <div className="flex gap-3">
-                        <Link to="/dashboard" className="px-4 py-2 bg-white border border-slate-200 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors font-medium flex items-center">
-                            <i className="bi bi-grid mr-2"></i> Dashboard
+                        <Link to="/dashboard" className="px-5 py-2.5 bg-gradient-to-r from-azul-lago to-purpura-mistico text-white rounded-xl hover:scale-105 transition-all font-bold shadow-lg shadow-azul-lago/30 flex items-center">
+                            <i className="bi bi-grid-fill mr-2"></i> Dashboard
                         </Link>
                     </div>
                 </div>
 
-                {/* Summary Cards */}
+                {/* Summary Cards - Andean Gradients */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <div className="bg-white p-6 rounded-xl border border-slate-100 shadow-sm">
-                        <p className="text-sm text-slate-500 mb-1">Total Ganado</p>
+                    <div className="bg-gradient-to-br from-verde-puna to-verde-puna-dark p-6 rounded-2xl shadow-xl hover-lift text-white">
+                        <p className="text-sm text-white/80 mb-1 font-medium">Total Ganado</p>
                         <div className="flex justify-between items-end">
                             <div>
-                                <h3 className="text-3xl font-bold text-slate-900">{totalEarned.toFixed(0)} TC</h3>
-                                <p className="text-xs text-slate-400">Tayacoins por ventas</p>
+                                <h3 className="text-4xl font-bold">{totalEarned.toFixed(0)} TC</h3>
+                                <p className="text-xs text-white/70 mt-1">Tayacoins por ventas</p>
                             </div>
-                            <div className="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center text-green-500">
-                                <i className="bi bi-graph-up-arrow"></i>
+                            <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                                <i className="bi bi-graph-up-arrow text-2xl"></i>
                             </div>
                         </div>
                     </div>
 
-                    <div className="bg-white p-6 rounded-xl border border-slate-100 shadow-sm">
-                        <p className="text-sm text-slate-500 mb-1">Total Gastado</p>
+                    <div className="bg-gradient-to-br from-rojo-andino to-rojo-andino-dark p-6 rounded-2xl shadow-xl hover-lift text-white">
+                        <p className="text-sm text-white/80 mb-1 font-medium">Total Gastado</p>
                         <div className="flex justify-between items-end">
                             <div>
-                                <h3 className="text-3xl font-bold text-slate-900">{totalSpent.toFixed(0)} TC</h3>
-                                <p className="text-xs text-slate-400">Tayacoins en compras</p>
+                                <h3 className="text-4xl font-bold">{totalSpent.toFixed(0)} TC</h3>
+                                <p className="text-xs text-white/70 mt-1">Tayacoins en compras</p>
                             </div>
-                            <div className="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center text-red-500">
-                                <i className="bi bi-graph-down-arrow"></i>
+                            <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                                <i className="bi bi-graph-down-arrow text-2xl"></i>
                             </div>
                         </div>
                     </div>
 
-                    <div className="bg-white p-6 rounded-xl border border-slate-100 shadow-sm">
-                        <p className="text-sm text-slate-500 mb-1">Transacciones</p>
+                    <div className="bg-gradient-to-br from-purpura-mistico to-purpura-mistico-dark p-6 rounded-2xl shadow-xl hover-lift text-white">
+                        <p className="text-sm text-white/80 mb-1 font-medium">Transacciones</p>
                         <div className="flex justify-between items-end">
                             <div>
-                                <h3 className="text-3xl font-bold text-slate-900">{transactions.length}</h3>
-                                <p className="text-xs text-slate-400">Total de operaciones</p>
+                                <h3 className="text-4xl font-bold">{transactions.length}</h3>
+                                <p className="text-xs text-white/70 mt-1">Total de operaciones</p>
                             </div>
-                            <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-500">
-                                <i className="bi bi-activity"></i>
+                            <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                                <i className="bi bi-activity text-2xl"></i>
                             </div>
                         </div>
                     </div>
@@ -158,12 +204,15 @@ const History = ({ user }) => {
                     <div className="flex gap-2">
                         <button
                             onClick={() => { setFilterType('all'); setFilterStatus('all'); setDateFrom(''); setDateTo(''); }}
-                            className="px-4 py-2 text-slate-500 hover:text-slate-700 text-sm font-medium transition-colors"
+                            className="px-4 py-2 text-slate-600 hover:text-rojo-andino text-sm font-bold transition-colors flex items-center gap-2"
                         >
-                            <i className="bi bi-x-lg mr-1"></i> Limpiar
+                            <i className="bi bi-x-circle"></i> Limpiar
                         </button>
-                        <button className="px-4 py-2 bg-amber-700 text-white rounded-lg hover:bg-amber-800 transition-colors text-sm font-medium shadow-sm">
-                            <i className="bi bi-download mr-2"></i> Exportar
+                        <button
+                            onClick={exportToCSV}
+                            className="px-5 py-2 bg-gradient-to-r from-amarillo-sol to-naranja-inca text-white rounded-xl hover:scale-105 transition-all text-sm font-bold shadow-lg shadow-amarillo-sol/30 flex items-center gap-2"
+                        >
+                            <i className="bi bi-download"></i> Exportar
                         </button>
                     </div>
                 </div>

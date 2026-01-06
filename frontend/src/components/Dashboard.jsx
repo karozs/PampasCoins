@@ -127,61 +127,68 @@ const Dashboard = ({ user }) => {
                     {/* Left Column (Main Content) */}
                     <div className="lg:col-span-2 space-y-8">
 
-                        {/* Balance Card */}
-                        <div className="bg-gradient-to-r from-primary to-primary-light rounded-2xl p-8 text-white shadow-lg relative overflow-hidden transform hover:scale-[1.02] transition-transform duration-300 animate-slide-up">
-                            <div className="absolute top-0 right-0 p-4 opacity-20">
+                        {/* Balance Card - Andean Gradient */}
+                        <div className="bg-andean-gradient rounded-2xl p-8 text-white shadow-2xl relative overflow-hidden transform hover:scale-[1.02] transition-all duration-300 animate-slide-up animate-pulse-glow">
+                            <div className="absolute top-0 right-0 p-4 opacity-10">
                                 <i className="bi bi-coin text-9xl transform rotate-12 translate-x-4 -translate-y-4"></i>
                             </div>
+                            <div className="absolute inset-0 animate-shimmer opacity-20"></div>
                             <div className="relative z-10">
-                                <p className="text-primary-100 font-medium mb-2">Saldo Actual</p>
-                                <h2 className="text-5xl font-bold mb-4">{parseFloat(currentUser.balance).toFixed(2)} <span className="text-2xl font-normal">TC</span></h2>
-                                <div className="flex items-center text-secondary-light bg-white/10 w-fit px-3 py-1 rounded-full text-sm">
-                                    <i className="bi bi-graph-up-arrow mr-2"></i>
+                                <p className="text-white/80 font-medium mb-2 flex items-center">
+                                    <i className="bi bi-wallet2 mr-2"></i>
+                                    Saldo Actual
+                                </p>
+                                <h2 className="text-6xl font-bold mb-4 animate-float">{parseFloat(currentUser.balance).toFixed(2)} <span className="text-2xl font-normal">TC</span></h2>
+                                <div className="flex items-center bg-white/20 backdrop-blur-sm w-fit px-4 py-2 rounded-full text-sm font-medium">
+                                    <i className="bi bi-graph-up-arrow mr-2 text-amarillo-sol"></i>
                                     <span>+{stats.weeklyIncome.toFixed(0)} TC esta semana</span>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Stats Row */}
+                        {/* Stats Row - Colorful Cards */}
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 animate-slide-up-delay-1">
-                            <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-100 flex flex-col items-center text-center hover:shadow-md hover:-translate-y-1 transition-all duration-300">
-                                <div className="mb-3 text-secondary">
-                                    <i className="bi bi-bag-check text-2xl"></i>
+                            <div className="bg-gradient-to-br from-verde-puna to-verde-puna-dark p-6 rounded-xl shadow-lg border-2 border-verde-puna-light/30 flex flex-col items-center text-center hover-lift animate-float text-white">
+                                <div className="mb-3 bg-white/20 backdrop-blur-sm p-3 rounded-full">
+                                    <i className="bi bi-bag-check text-3xl"></i>
                                 </div>
-                                <h3 className="text-3xl font-bold text-slate-900 mb-1">{stats.productsSold}</h3>
-                                <p className="text-xs text-slate-500 uppercase tracking-wider">Productos Vendidos</p>
+                                <h3 className="text-4xl font-bold mb-1">{stats.productsSold}</h3>
+                                <p className="text-xs text-white/80 uppercase tracking-wider font-medium">Productos Vendidos</p>
                             </div>
-                            <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-100 flex flex-col items-center text-center hover:shadow-md hover:-translate-y-1 transition-all duration-300">
-                                <div className="mb-3 text-bronze">
-                                    <i className="bi bi-cart text-2xl"></i>
+                            <div className="bg-gradient-to-br from-naranja-inca to-terracota p-6 rounded-xl shadow-lg border-2 border-naranja-inca-light/30 flex flex-col items-center text-center hover-lift animate-float text-white" style={{ animationDelay: '0.5s' }}>
+                                <div className="mb-3 bg-white/20 backdrop-blur-sm p-3 rounded-full">
+                                    <i className="bi bi-cart text-3xl"></i>
                                 </div>
-                                <h3 className="text-3xl font-bold text-slate-900 mb-1">{stats.purchasesMade}</h3>
-                                <p className="text-xs text-slate-500 uppercase tracking-wider">Compras Realizadas</p>
+                                <h3 className="text-4xl font-bold mb-1">{stats.purchasesMade}</h3>
+                                <p className="text-xs text-white/80 uppercase tracking-wider font-medium">Compras Realizadas</p>
                             </div>
-                            <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-100 flex flex-col items-center text-center hover:shadow-md hover:-translate-y-1 transition-all duration-300">
-                                <div className="mb-3 text-primary">
-                                    <i className="bi bi-box-seam text-2xl"></i>
+                            <div className="bg-gradient-to-br from-purpura-mistico to-purpura-mistico-dark p-6 rounded-xl shadow-lg border-2 border-purpura-mistico-light/30 flex flex-col items-center text-center hover-lift animate-float text-white" style={{ animationDelay: '1s' }}>
+                                <div className="mb-3 bg-white/20 backdrop-blur-sm p-3 rounded-full">
+                                    <i className="bi bi-box-seam text-3xl"></i>
                                 </div>
-                                <h3 className="text-3xl font-bold text-slate-900 mb-1">{stats.activeProducts}</h3>
-                                <p className="text-xs text-slate-500 uppercase tracking-wider">Productos Activos</p>
+                                <h3 className="text-4xl font-bold mb-1">{stats.activeProducts}</h3>
+                                <p className="text-xs text-white/80 uppercase tracking-wider font-medium">Productos Activos</p>
                             </div>
                         </div>
 
-                        {/* Actions Row */}
+                        {/* Actions Row - Vibrant Buttons */}
                         <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-100 animate-slide-up-delay-2">
-                            <h3 className="font-bold text-slate-900 mb-4">Acciones Rápidas</h3>
+                            <h3 className="font-bold text-slate-900 mb-4 flex items-center">
+                                <i className="bi bi-lightning-charge-fill text-amarillo-sol mr-2"></i>
+                                Acciones Rápidas
+                            </h3>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <Link to="/create-product" className="flex items-center justify-center p-4 bg-primary text-white rounded-lg hover:bg-primary-light transition-all hover:scale-[1.02] font-bold shadow-lg shadow-primary/20">
-                                    <i className="bi bi-plus-lg mr-2"></i> Publicar Producto
+                                <Link to="/create-product" className="flex items-center justify-center p-4 bg-gradient-to-r from-rojo-andino to-rojo-andino-light text-white rounded-xl hover:scale-[1.05] transition-all font-bold shadow-lg shadow-rojo-andino/30 hover:shadow-xl">
+                                    <i className="bi bi-plus-circle-fill mr-2"></i> Publicar Producto
                                 </Link>
-                                <Link to="/products" className="flex items-center justify-center p-4 bg-white border border-slate-200 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors font-medium">
+                                <Link to="/products" className="flex items-center justify-center p-4 bg-gradient-to-r from-azul-lago to-azul-lago-light text-white rounded-xl hover:scale-[1.05] transition-all font-bold shadow-lg shadow-azul-lago/30 hover:shadow-xl">
                                     <i className="bi bi-shop mr-2"></i> Ver Productos
                                 </Link>
-                                <Link to="/history" className="flex items-center justify-center p-4 bg-bronze text-white rounded-lg hover:bg-bronze-light transition-colors font-bold shadow-lg shadow-bronze/20">
+                                <Link to="/history" className="flex items-center justify-center p-4 bg-gradient-to-r from-amarillo-sol to-naranja-inca text-white rounded-xl hover:scale-[1.05] transition-all font-bold shadow-lg shadow-amarillo-sol/30 hover:shadow-xl">
                                     <i className="bi bi-clock-history mr-2"></i> Historial
                                 </Link>
-                                <Link to="/profile" className="flex items-center justify-center p-4 bg-white border border-slate-200 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors font-medium">
-                                    <i className="bi bi-person mr-2"></i> Mi Perfil
+                                <Link to="/profile" className="flex items-center justify-center p-4 bg-gradient-to-r from-purpura-mistico to-purpura-mistico-light text-white rounded-xl hover:scale-[1.05] transition-all font-bold shadow-lg shadow-purpura-mistico/30 hover:shadow-xl">
+                                    <i className="bi bi-person-circle mr-2"></i> Mi Perfil
                                 </Link>
                             </div>
                         </div>
@@ -254,7 +261,7 @@ const Dashboard = ({ user }) => {
                                     ) : (
                                         recentActivity.map((activity) => (
                                             <div key={activity.id} className="relative pl-10">
-                                                <div className={`absolute left-0 top-1 w-8 h-8 rounded-full border-4 border-white flex items-center justify-center ${activity.type === 'venta' ? 'bg-secondary' : 'bg-bronze'}`}>
+                                                <div className={`absolute left-0 top-1 w-8 h-8 rounded-full border-4 border-white flex items-center justify-center shadow-md ${activity.type === 'venta' ? 'bg-gradient-to-br from-verde-puna to-verde-puna-dark' : 'bg-gradient-to-br from-naranja-inca to-terracota'}`}>
                                                     <i className={`bi ${activity.type === 'venta' ? 'bi-graph-up-arrow' : 'bi-cart'} text-white text-xs`}></i>
                                                 </div>
                                                 <div>

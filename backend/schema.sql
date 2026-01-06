@@ -45,15 +45,37 @@ CREATE TABLE IF NOT EXISTS reviews (
     FOREIGN KEY (seller_id) REFERENCES users(id)
 );
 
+-- Social Media Table (Independent)
+CREATE TABLE IF NOT EXISTS social_media (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL UNIQUE,
+    instagram VARCHAR(255),
+    facebook VARCHAR(255),
+    twitter VARCHAR(255),
+    tiktok VARCHAR(255),
+    whatsapp VARCHAR(20),
+    telegram VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- Additional columns for users table
 ALTER TABLE users ADD COLUMN IF NOT EXISTS profile_image TEXT;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS bio TEXT;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS cover_image TEXT;
+
+-- Legacy social media columns (kept for backward compatibility)
 ALTER TABLE users ADD COLUMN IF NOT EXISTS instagram VARCHAR(255);
 ALTER TABLE users ADD COLUMN IF NOT EXISTS facebook VARCHAR(255);
 ALTER TABLE users ADD COLUMN IF NOT EXISTS twitter VARCHAR(255);
+ALTER TABLE users ADD COLUMN IF NOT EXISTS tiktok VARCHAR(255);
+
+-- Additional columns for products table
 ALTER TABLE products ADD COLUMN IF NOT EXISTS description TEXT;
+ALTER TABLE products ADD COLUMN IF NOT EXISTS category VARCHAR(50) DEFAULT 'Otros';
+ALTER TABLE products ADD COLUMN IF NOT EXISTS unit VARCHAR(20) DEFAULT 'unidades';
+
+-- Additional columns for transactions table
 ALTER TABLE transactions ADD COLUMN IF NOT EXISTS transaction_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 
-
-ALTER TABLE products ADD COLUMN IF NOT EXISTS category VARCHAR(50) DEFAULT 'Otros';
-ALTER TABLE users ADD COLUMN IF NOT EXISTS cover_image TEXT;
-ALTER TABLE users ADD COLUMN IF NOT EXISTS tiktok VARCHAR(255);

@@ -37,30 +37,33 @@ const CreateProduct = ({ user }) => {
     return (
         <div className="min-h-screen bg-background py-8 animate-fade-in">
             <div className="container mx-auto px-4">
-                {/* Breadcrumb & Header */}
+                {/* Breadcrumb & Header - Andean Style */}
                 <div className="mb-8">
-                    <div className="flex items-center text-sm text-slate-500 mb-2">
-                        <Link to="/dashboard" className="hover:text-primary">Dashboard</Link>
-                        <i className="bi bi-chevron-right mx-2 text-xs"></i>
-                        <span className="text-slate-900 font-medium">Publicar Producto</span>
+                    <div className="flex items-center text-sm text-slate-600 mb-3">
+                        <Link to="/dashboard" className="hover:text-azul-lago font-medium transition-colors">Dashboard</Link>
+                        <i className="bi bi-chevron-right mx-2 text-xs text-azul-lago"></i>
+                        <span className="text-slate-900 font-bold">Publicar Producto</span>
                     </div>
-                    <h1 className="text-3xl font-bold text-slate-900">Publicar Producto</h1>
-                    <p className="text-slate-500">Agregue su producto al marketplace de Tayacoins</p>
+                    <h1 className="text-4xl font-bold text-gradient-andean mb-2">Publicar Producto</h1>
+                    <p className="text-slate-600 flex items-center">
+                        <i className="bi bi-shop-window mr-2 text-purpura-mistico"></i>
+                        Agregue su producto al marketplace de Tayacoins
+                    </p>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Left Column - Form */}
                     <div className="lg:col-span-2 space-y-6">
                         <form onSubmit={handleSubmit} className="space-y-6">
-                            {/* Product Info Card */}
-                            <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-6">
-                                <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-50">
-                                    <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center text-green-600">
-                                        <i className="bi bi-box-seam text-xl"></i>
+                            {/* Product Info Card - Andean Style */}
+                            <div className="bg-gradient-to-br from-white to-azul-lago/5 rounded-2xl shadow-md border-2 border-azul-lago/20 p-6 hover-lift">
+                                <div className="flex items-center gap-3 mb-6 pb-4 border-b border-azul-lago/20">
+                                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-verde-puna to-verde-puna-dark flex items-center justify-center text-white shadow-lg">
+                                        <i className="bi bi-box-seam text-2xl"></i>
                                     </div>
                                     <div>
-                                        <h2 className="text-lg font-bold text-slate-900">Información del Producto</h2>
-                                        <p className="text-sm text-slate-500">Complete los detalles de su producto</p>
+                                        <h2 className="text-xl font-bold text-slate-900">Información del Producto</h2>
+                                        <p className="text-sm text-slate-600">Complete los detalles de su producto</p>
                                     </div>
                                 </div>
 
@@ -194,15 +197,15 @@ const CreateProduct = ({ user }) => {
                                 </div>
                             </div>
 
-                            {/* Images Card */}
-                            <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-6">
-                                <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-50">
-                                    <div className="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center text-orange-600">
-                                        <i className="bi bi-camera text-xl"></i>
+                            {/* Images Card - Andean Style */}
+                            <div className="bg-gradient-to-br from-white to-naranja-inca/5 rounded-2xl shadow-md border-2 border-naranja-inca/20 p-6 hover-lift">
+                                <div className="flex items-center gap-3 mb-6 pb-4 border-b border-naranja-inca/20">
+                                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-naranja-inca to-amarillo-sol flex items-center justify-center text-white shadow-lg">
+                                        <i className="bi bi-camera text-2xl"></i>
                                     </div>
                                     <div>
-                                        <h2 className="text-lg font-bold text-slate-900">Imágenes del Producto</h2>
-                                        <p className="text-sm text-slate-500">Opcional - Agregue una imagen referencia</p>
+                                        <h2 className="text-xl font-bold text-slate-900">Imágenes del Producto</h2>
+                                        <p className="text-sm text-slate-600">Opcional - Agregue una imagen referencia</p>
                                     </div>
                                 </div>
 
@@ -242,17 +245,21 @@ const CreateProduct = ({ user }) => {
                                 </div>
                             </div>
 
-                            {/* Submit Button */}
+                            {/* Submit Button - Andean Gradient */}
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="w-full py-4 px-6 bg-primary text-white font-bold rounded-xl hover:bg-primary-dark transition-all hover:scale-[1.01] shadow-lg shadow-primary/20 flex justify-center items-center disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:scale-100"
+                                className="w-full bg-gradient-to-r from-rojo-andino via-naranja-inca to-amarillo-sol text-white py-4 rounded-2xl font-bold text-lg hover:scale-[1.02] transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-2xl shadow-rojo-andino/30 hover:shadow-3xl flex items-center justify-center gap-3"
                             >
                                 {loading ? (
-                                    <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                    <>
+                                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                                        Publicando...
+                                    </>
                                 ) : (
                                     <>
-                                        <i className="bi bi-upload mr-2"></i> Publicar Producto
+                                        <i className="bi bi-rocket-takeoff-fill text-xl"></i>
+                                        Publicar Producto
                                     </>
                                 )}
                             </button>

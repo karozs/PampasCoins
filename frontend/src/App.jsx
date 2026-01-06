@@ -49,7 +49,7 @@ function App() {
 
   return (
     <CartProvider>
-      <Router>
+      <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <div className="min-h-screen bg-background">
           <Navbar user={user} onLogout={handleLogout} />
           <CartDrawer user={user} onCheckoutSuccess={(newBalance) => updateUser({ ...user, balance: newBalance })} />
