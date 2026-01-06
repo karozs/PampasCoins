@@ -3,6 +3,7 @@
     "version": "1.0.0",
     "description": "Sistema de intercambio comunitario con TayaCoins",
     "scripts": {
+        "postinstall": "cd backend && npm install",
         "start": "cd backend && node server.js",
         "install-backend": "cd backend && npm install",
         "install-frontend": "cd frontend && npm install",
